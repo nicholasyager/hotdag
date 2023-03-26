@@ -23,7 +23,7 @@ class SlimNode(Node):
 
     @property
     def depends_on_nodes(self):
-        return self.depends_on.get('nodes', [])
+        return self.depends_on.get("nodes", [])
 
     @property
     def empty(self):

@@ -26,7 +26,10 @@ classifiers = [
 dependencies = [
   'fastapi',
   'dbt-core~=1.4',
-  'loguru'
+  'loguru',
+  'pydot',
+  'graphviz',
+  'requests'
 ]
 dynamic = ["version"]
 

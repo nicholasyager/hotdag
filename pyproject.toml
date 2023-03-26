@@ -1,0 +1,104 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hotdag"
+description = 'Hot evaluation of dbt DAG selectors'
+readme = "README.md"
+requires-python = ">=3.7"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Nicholas Yager", email = "yager@nicholasyager.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  'fastapi',
+  'dbt-core~=1.4',
+  'loguru'
+]
+dynamic = ["version"]
+
+
+[project.urls]
+Documentation = "https://github.com/nicholasyager/hotdag#readme"
+Issues = "https://github.com/nicholasyager/hotdag/issues"
+Source = "https://github.com/nicholasyager/hotdag"
+
+[tool.hatch.version]
+path = "hotdag/__about__.py"
+
+
+[tool.hatch.envs.default]
+dependencies = [
+  "uvicorn",
+]
+[tool.hatch.envs.default.scripts]
+serve = 'uvicorn hotdag.main:app'
+
+[tool.hatch.envs.test]
+dependencies = [
+  "pytest",
+  "pytest-cov",
+]
+[tool.hatch.envs.test.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=hotdag --cov=tests {args}"
+no-cov = "cov --no-cov {args}"
+
+
+[[tool.hatch.envs.test.matrix]]
+python = ["37", "38", "39", "310", "311"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = [
+  "hotdag/__about__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+
+
+[tool.hatch.envs.style]
+detached = true
+dependencies = [
+  "flake8",
+  "black",
+  "isort",
+]
+[tool.hatch.envs.style.scripts]
+check = [
+  "flake8 .",
+  "black --check --diff .",
+  "isort --check-only --diff .",
+]
+fmt = [
+  "isort .",
+  "black .",
+  "check",
+]
+
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.0.1"
+tag_format = "0.0.0"
+[dirs.env]
+virtual = ".hatch"

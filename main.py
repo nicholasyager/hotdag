@@ -3,23 +3,13 @@ import sys
 import click
 
 from hotdag import HotDAG
-from hotdag.manifest import FileManifestLoader, URLManifestLoader
-from hotdag.renderer import JSONRenderer, SVGRenderer, TextRenderer
+from hotdag.manifest import manifest_loaders
+from hotdag.renderer import renderers
 
 
 @click.group()
 def cli():
     pass
-
-
-manifest_loaders = {
-    "file": FileManifestLoader,
-    "url": URLManifestLoader,
-    "stdin": FileManifestLoader,
-    # 'dbt-cloud': None
-}
-
-renderers = {"json": JSONRenderer, "text": TextRenderer, "svg": SVGRenderer}
 
 
 @cli.command()
@@ -69,7 +59,7 @@ def serve():
     """Run a server interactive selector processing via APi."""
     import uvicorn
 
-    uvicorn.run("hotdag.server.server:get_application", port=5000, log_level="info")
+    uvicorn.run("hotdag.server.server:get_application", port=8000, log_level="info")
 
 
 if __name__ == "__main__":

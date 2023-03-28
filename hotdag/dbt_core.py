@@ -1,19 +1,46 @@
-from typing import Dict
+from typing import Dict, List
 
-from dbt.compilation import Compiler, Linker
 from dbt.contracts.graph.manifest import Manifest
-from dbt.graph import Graph
+from dbt.graph import UniqueId
+from dbt.node_types import NodeType
+from pydantic import BaseModel
 
-from hotdag import CompiledNode, Node, SlimNode
+
+class Config(BaseModel):
+    enabled: bool = True
 
 
-async def compile_graph(manifest):
+class Node(BaseModel):
+    unique_id: UniqueId
+    config: Config = Config()
+
+
+class SlimNode(Node):
+    depends_on: Dict[str, List[str]]
+    raw_code: str = ""
+
+    def __init__(self, *args, **data):
+        if "raw_sql" in data:
+            data["raw_code"] = data.get("raw_sql", data.get("raw_code"))
+
+        super().__init__(*args, **data)
+
+    @property
+    def depends_on_nodes(self):
+        return self.depends_on.get("nodes", [])
+
+    @property
+    def empty(self):
+        return not self.raw_code.strip()
+
+
+class CompiledNode(SlimNode):
+    resource_type: NodeType
+    fqn: List[str]
+
+
+def compile_graph(manifest):
     """Compile the Manifest into a dbt Graph."""
-    compiler = Compiler(config={})
-    linker = Linker()
-    compiler.link_graph(linker=linker, manifest=manifest)
-    graph = Graph(linker.graph)
-    return graph
 
 
 def deserialize_manifest(manifest_dict: Dict) -> Manifest:

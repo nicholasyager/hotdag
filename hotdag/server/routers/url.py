@@ -3,42 +3,36 @@ from typing import Optional
 from fastapi import APIRouter
 from starlette.responses import Response
 
-from hotdag.dbt_core import compile_graph
-from hotdag.server.routers import get_selected_nodes, generate_svg
-from hotdag.url_manifests import get_manifest_from_url
+from hotdag import HotDAG
+from hotdag.manifest import URLManifestLoader
+from hotdag.renderer import JSONRenderer, SVGRenderer
 
 router = APIRouter(prefix="/url", tags=["URL Source"])
 
 
 @router.get("/")
 async def from_url(
-        url: str,
-        select: str = "+*+",
-        exclude: Optional[str] = None,
+    url: str,
+    select: str = "+*+",
+    exclude: Optional[str] = None,
 ):
-    manifest = get_manifest_from_url(url)
-    graph = await compile_graph(manifest)
+    hotdag = HotDAG(manifest_loader=URLManifestLoader(), renderer=JSONRenderer())
 
-    direct_nodes, indirect_nodes = await get_selected_nodes(
-        graph=graph, manifest=manifest, select=select, exclude=exclude
-    )
-
-    return direct_nodes
+    hotdag.load_manifest(url=url)
+    selected_nodes = hotdag.get_selection(select, exclude)
+    return hotdag.render(selected_nodes)
 
 
 @router.get("/svg")
 async def svg_from_url(
-        url: str,
-        select: str = "+*+",
-        exclude: Optional[str] = None,
+    url: str,
+    select: str = "+*+",
+    exclude: Optional[str] = None,
 ):
-    manifest = get_manifest_from_url(url)
-    graph = await compile_graph(manifest)
+    hotdag = HotDAG(manifest_loader=URLManifestLoader(), renderer=SVGRenderer())
 
-    direct_nodes, indirect_nodes = await get_selected_nodes(
-        graph=graph, manifest=manifest, select=select, exclude=exclude
-    )
-
-    svg = await generate_svg(direct_nodes, graph)
+    hotdag.load_manifest(url=url)
+    selected_nodes = hotdag.get_selection(select, exclude)
+    svg = hotdag.render(selected_nodes)
 
     return Response(svg, headers={"Content-Type": "image/svg+xml"})

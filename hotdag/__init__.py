@@ -1,43 +1,70 @@
 # SPDX-FileCopyrightText: 2023-present Nicholas Yager <yager@nicholasyager.com>
 #
 # SPDX-License-Identifier: MIT
-from typing import Dict, List
 
-from dbt.graph import UniqueId
-from dbt.node_types import NodeType
-from loguru import logger
-from pydantic import BaseModel
+from typing import Optional, Set
 
-
-class Config(BaseModel):
-    enabled: bool = True
+from dbt.compilation import Compiler, Linker
+from dbt.contracts.graph.manifest import Manifest
+from dbt.graph import Graph, NodeSelector, SelectionDifference, UniqueId
+from dbt.graph.cli import parse_from_definition
 
 
-class Node(BaseModel):
-    unique_id: UniqueId
-    config: Config = Config()
+class HotDAG:
+    """Class for interacting with manifests and selecting nodes."""
 
+    def __init__(self, manifest_loader, renderer):
+        """Initialize a HotDAG."""
 
-class SlimNode(Node):
-    depends_on: Dict[str, List[str]]
-    raw_code: str = ""
+        self.manifest_loader = manifest_loader
+        self.renderer = renderer
 
-    def __init__(self, *args, **data):
-        if "raw_sql" in data:
-            logger.debug("No `raw_code` field found. Falling back on `raw_sql`.")
-            data["raw_code"] = data.get("raw_sql", data.get("raw_code"))
+        self.manifest: Optional[Manifest] = None
+        self.graph: Optional[Graph] = None
 
-        super().__init__(*args, **data)
+    def _load_graph(self):
+        compiler = Compiler(config={})
+        linker = Linker()
+        compiler.link_graph(linker=linker, manifest=self.manifest)
+        self.graph = Graph(linker.graph)
 
-    @property
-    def depends_on_nodes(self):
-        return self.depends_on.get("nodes", [])
+    def load_manifest(self, *args, **kwargs):
+        """Load the manifest using the provided ManifestLoader."""
 
-    @property
-    def empty(self):
-        return not self.raw_code.strip()
+        self.manifest = self.manifest_loader.load(*args, **kwargs)
+        self._load_graph()
 
+    def get_selection(
+        self, select: Optional[str] = None, exclude: Optional[str] = None
+    ) -> Set[UniqueId]:
+        """Get a selection of nodes based on a selection spec"""
 
-class CompiledNode(SlimNode):
-    resource_type: NodeType
-    fqn: List[str]
+        if select is None:
+            select = "+*+"
+
+        # Generate selector from string
+        selector_definition = parse_from_definition(definition=select)
+
+        exclusion_definition = None
+        if exclude:
+            exclusion_definition = parse_from_definition(definition=exclude)
+
+        # Generate subgraph
+        node_selector = NodeSelector(graph=self.graph, manifest=self.manifest)
+
+        direct_nodes, indirect_nodes = node_selector.select_nodes(
+            SelectionDifference([selector_definition, exclusion_definition])
+            if exclusion_definition
+            else selector_definition
+        )
+
+        return direct_nodes
+
+    def render(self, selected_nodes: Set[UniqueId], **kwargs) -> str:
+        """Render the selection using the provided Renderer."""
+        return self.renderer.render(
+            manifest=self.manifest,
+            graph=self.graph,
+            selected_nodes=selected_nodes,
+            **kwargs,
+        )

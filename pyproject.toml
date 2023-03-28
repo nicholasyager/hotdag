@@ -33,6 +33,13 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "isort",
+  "black",
+  "flake8"
+]
 
 [project.urls]
 Documentation = "https://github.com/nicholasyager/hotdag#readme"
@@ -47,6 +54,7 @@ path = "hotdag/__about__.py"
 dependencies = [
   "uvicorn",
 ]
+
 [tool.hatch.envs.default.scripts]
 serve = 'uvicorn hotdag.main:app'
 
@@ -76,7 +84,6 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
-
 
 
 [tool.hatch.envs.style]

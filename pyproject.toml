@@ -112,8 +112,8 @@ fmt = [
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.3.0"
-tag_format = "0.0.0"
+version = "0.4.0"
+tag_format = "$major.$minor.$patch$prerelease"
 version_files = [
     "hotdag/__about__.py",
     "pyproject.toml:version"

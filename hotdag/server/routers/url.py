@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from starlette.responses import Response
 
 from hotdag import HotDAG
-from hotdag.manifest import URLManifestLoader, manifest_loaders
+from hotdag.manifest import URLManifestLoader
 from hotdag.renderer import renderers
 from hotdag.server.routers import OutputTypes
 
@@ -16,7 +16,7 @@ async def from_url(
     url: str,
     select: str = "+*+",
     exclude: Optional[str] = None,
-    output: OutputTypes = 'json',
+    output: OutputTypes = "json",
 ):
     renderer = renderers[output]()
 
@@ -27,4 +27,3 @@ async def from_url(
     output = hotdag.render(selected_nodes)
 
     return Response(output, headers={"Content-Type": renderer.content_type})
-

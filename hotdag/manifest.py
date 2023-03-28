@@ -7,7 +7,6 @@ from starlette.exceptions import HTTPException
 from hotdag.dbt_core import CompiledNode, Node, SlimNode, deserialize_manifest
 
 
-
 class AbstractManifestLoader:
     """An abstract class for loading manifests from specific data sources,"""
 

@@ -55,7 +55,7 @@ def select(input, output, file, url, select, exclude):
 
 
 @cli.command()
-@click.option('--port', type=int, default=8000)
+@click.option("--port", type=int, default=8000)
 def serve(port: int):
     """Run a server interactive selector processing via APi."""
     import uvicorn

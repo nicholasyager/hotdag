@@ -6,7 +6,6 @@ from dbt.graph import Graph, UniqueId
 
 
 class Renderer:
-
     def __init__(self, content_type: str):
         self.content_type = content_type
 
@@ -19,7 +18,7 @@ class JSONRenderer(Renderer):
     """Render the selection as a JSON payload."""
 
     def __init__(self):
-        super().__init__(content_type='application/json')
+        super().__init__(content_type="application/json")
 
     def render(self, manifest: Manifest, graph: Graph, selected_nodes: Set[UniqueId]):
         """Render the selection as a JSON array of node UniqueIDs."""
@@ -30,10 +29,10 @@ class TextRenderer(Renderer):
     """Render the selection as a Text payload."""
 
     def __init__(self):
-        super().__init__(content_type='application/text')
+        super().__init__(content_type="application/text")
 
     def render(
-            self, manifest: Manifest, graph: Graph, selected_nodes: Set[UniqueId]
+        self, manifest: Manifest, graph: Graph, selected_nodes: Set[UniqueId]
     ) -> str:
         """Render the selection as a JSON array of node UniqueIDs."""
         return "\n".join(selected_nodes)
@@ -43,10 +42,10 @@ class SVGRenderer(Renderer):
     """Render the selection as an SVG of the subgraph."""
 
     def __init__(self):
-        super().__init__(content_type='image/svg+xml')
+        super().__init__(content_type="image/svg+xml")
 
     def render(
-            self, manifest: Manifest, graph: Graph, selected_nodes: Set[UniqueId]
+        self, manifest: Manifest, graph: Graph, selected_nodes: Set[UniqueId]
     ) -> str:
         import networkx as nx
 

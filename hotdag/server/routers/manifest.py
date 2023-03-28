@@ -13,9 +13,10 @@ router = APIRouter(prefix="/manifest", tags=["URL Source"])
 
 @router.post("/")
 async def from_manifest(
-        select: str = "+*+", exclude: Optional[str] = None,
-        output: OutputTypes = 'json',
-        manifest: Dict = Body(...)
+    select: str = "+*+",
+    exclude: Optional[str] = None,
+    output: OutputTypes = "json",
+    manifest: Dict = Body(...),
 ):
     renderer = renderers[output]()
 

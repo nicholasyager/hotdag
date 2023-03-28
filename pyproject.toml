@@ -46,6 +46,10 @@ Documentation = "https://github.com/nicholasyager/hotdag#readme"
 Issues = "https://github.com/nicholasyager/hotdag/issues"
 Source = "https://github.com/nicholasyager/hotdag"
 
+
+[project.scripts]
+hotdag = "hotdag:main"
+
 [tool.hatch.version]
 path = "hotdag/__about__.py"
 
@@ -108,8 +112,8 @@ fmt = [
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0"
-tag_format = "0.0.0"
+version = "0.4.0"
+tag_format = "$major.$minor.$patch$prerelease"
 version_files = [
     "hotdag/__about__.py",
     "pyproject.toml:version"

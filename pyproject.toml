@@ -46,6 +46,10 @@ Documentation = "https://github.com/nicholasyager/hotdag#readme"
 Issues = "https://github.com/nicholasyager/hotdag/issues"
 Source = "https://github.com/nicholasyager/hotdag"
 
+
+[project.scripts]
+hotdag = "hotdag:main"
+
 [tool.hatch.version]
 path = "hotdag/__about__.py"
 

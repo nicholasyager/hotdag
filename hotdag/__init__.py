@@ -5,6 +5,7 @@ from typing import Dict, List
 
 from dbt.graph import UniqueId
 from dbt.node_types import NodeType
+from loguru import logger
 from pydantic import BaseModel
 
 
@@ -20,6 +21,13 @@ class Node(BaseModel):
 class SlimNode(Node):
     depends_on: Dict[str, List[str]]
     raw_code: str = ""
+
+    def __init__(self, *args, **data):
+        if "raw_sql" in data:
+            logger.debug("No `raw_code` field found. Falling back on `raw_sql`.")
+            data["raw_code"] = data.get("raw_sql", data.get("raw_code"))
+
+        super().__init__(*args, **data)
 
     @property
     def depends_on_nodes(self):

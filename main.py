@@ -55,11 +55,12 @@ def select(input, output, file, url, select, exclude):
 
 
 @cli.command()
-def serve():
+@click.option('--port', type=int, default=8000)
+def serve(port: int):
     """Run a server interactive selector processing via APi."""
     import uvicorn
 
-    uvicorn.run("hotdag.server.server:get_application", port=8000, log_level="info")
+    uvicorn.run("hotdag.server.server:get_application", port=port, log_level="info")
 
 
 if __name__ == "__main__":

@@ -112,7 +112,7 @@ fmt = [
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0"
+version = "0.2.0"
 tag_format = "0.0.0"
 version_files = [
     "hotdag/__about__.py",

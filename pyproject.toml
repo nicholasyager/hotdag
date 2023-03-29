@@ -49,7 +49,7 @@ Source = "https://github.com/nicholasyager/hotdag"
 
 
 [project.scripts]
-hotdag = "hotdag:main"
+hotdag = "hotdag:main.cli"
 
 [tool.hatch.version]
 path = "hotdag/__about__.py"

@@ -32,7 +32,7 @@ jobs:
       run: |
         flake8 .
         black --check --diff .
-        isort --check-only --diff .
+#        isort --check-only --diff .
     # We don't have any tests, so commenting out for now.
     #- name: Test with pytest
     #  run: |

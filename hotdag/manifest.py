@@ -1,9 +1,11 @@
 import json
-from typing import Dict
+import os
+from typing import Dict, Optional
 
 from dbt.contracts.graph.manifest import Manifest
 from starlette.exceptions import HTTPException
 
+from hotdag.dbt_cloud import DbtCloud
 from hotdag.dbt_core import CompiledNode, Node, SlimNode, deserialize_manifest
 
 
@@ -98,9 +100,40 @@ class URLManifestLoader(AbstractManifestLoader):
         return deserialize_manifest(manifest)
 
 
+class DBTCloudLoader(AbstractManifestLoader):
+    """Load a manifest from dbt Cloud via the API."""
+
+    def __init__(self, api_key: Optional[str] = None):
+        if api_key is None:
+            api_key = os.environ.get("DBT_CLOUD_API_KEY")
+            if api_key is None:
+                raise Exception(
+                    "Loading from dbt Cloud requires an API key. "
+                    "Please set it in the `DBT_CLOUD_API_KEY` environment variable."
+                )
+
+        super().__init__()
+        self._client = DbtCloud(api_key=api_key)
+
+    def load(self, account_id: int, job_id: int) -> Manifest:
+        """Load a Manifest from a job on dbt Cloud."""
+
+        run = self._client.list_runs(
+            account_id, job_id, params={"status": 10, "order_by": "-id", "limit": 1}
+        )
+
+        manifest = self._client.get_artifact(
+            account_id=account_id,
+            run_id=run["data"][0]["id"],
+            artifact_name="manifest.json",
+        )
+
+        return deserialize_manifest(manifest)
+
+
 manifest_loaders = {
     "file": FileManifestLoader,
     "url": URLManifestLoader,
     "stdin": FileManifestLoader,
-    # 'dbt-cloud': None
+    "dbt_cloud": DBTCloudLoader,
 }

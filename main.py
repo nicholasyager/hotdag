@@ -19,9 +19,11 @@ def cli():
 @click.option("--output", type=click.Choice(list(renderers.keys())), default="text")
 @click.option("--file", type=click.Path())
 @click.option("--url", type=str)
+@click.option("--account-id", type=int)
+@click.option("--job-id", type=int)
 @click.option("--select")
 @click.option("--exclude")
-def select(input, output, file, url, select, exclude):
+def select(input, output, file, url, account_id, job_id, select, exclude):
     """Evaluate a dbt selector against a manifest."""
 
     manifest_loader = manifest_loaders[input]()
@@ -40,6 +42,14 @@ def select(input, output, file, url, select, exclude):
             raise Exception("The --url option is required when --input is url.")
 
         manifest_args = {"url": url}
+
+    elif input == "dbt_cloud":
+        if account_id is None or job_id is None:
+            raise Exception(
+                "Both the --account-id and --job-id options are required when --input is dbt_cloud."
+            )
+
+        manifest_args = {"account_id": account_id, "job_id": job_id}
 
     else:
         manifest_args = {}

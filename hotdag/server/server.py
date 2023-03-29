@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from hotdag.__about__ import __version__
-from hotdag.server.routers import manifest, url
+from hotdag.server.routers import manifest, url, cloud
 
 
 def get_application():
@@ -10,7 +10,7 @@ def get_application():
         version=__version__,
     )
 
-    routers = [manifest.router, url.router]
+    routers = [manifest.router, url.router, cloud.router]
     for router in routers:
         app.include_router(router)
 

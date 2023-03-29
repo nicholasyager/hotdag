@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from hotdag.__about__ import __version__
-from hotdag.server.routers import manifest, url, cloud
+from hotdag.server.routers import cloud, manifest, url
 
 
 def get_application():

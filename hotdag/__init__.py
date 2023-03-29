@@ -10,10 +10,10 @@ from dbt.graph import (
     Graph,
     NodeSelector,
     SelectionDifference,
-    UniqueId,
+    SelectionIntersection,
     SelectionSpec,
     SelectionUnion,
-    SelectionIntersection,
+    UniqueId,
 )
 from dbt.graph.cli import parse_from_definition
 

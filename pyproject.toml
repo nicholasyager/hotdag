@@ -38,7 +38,8 @@ dev = [
   "pytest",
   "isort",
   "black",
-  "flake8"
+  "flake8",
+  'twine'
 ]
 
 [project.urls]

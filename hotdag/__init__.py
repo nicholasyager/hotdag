@@ -73,17 +73,18 @@ class HotDAG:
         # Generate selector from string
         selector_definition = self.string_to_definition(selection=select)
 
-        exclusion_definition = None
+        complete_spec = None
         if exclude:
             exclusion_definition = self.string_to_definition(selection=exclude)
+            complete_spec = SelectionDifference(
+                [selector_definition, exclusion_definition]
+            )
 
         # Generate subgraph
         node_selector = NodeSelector(graph=self.graph, manifest=self.manifest)
 
         direct_nodes, indirect_nodes = node_selector.select_nodes(
-            SelectionDifference([selector_definition, exclusion_definition])
-            if exclusion_definition
-            else selector_definition
+            complete_spec if complete_spec else selector_definition
         )
 
         return direct_nodes

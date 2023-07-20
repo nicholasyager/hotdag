@@ -16,6 +16,7 @@ class Node(BaseModel):
 
 
 class SlimNode(Node):
+    is_versioned: bool = False
     depends_on: Dict[str, List[str]]
     raw_code: str = ""
 
